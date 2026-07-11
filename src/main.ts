@@ -3,14 +3,10 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
-
 async function bootstrap() {
-
   const app = await NestFactory.create(AppModule);
 
-
   app.enableCors();
-
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -19,7 +15,6 @@ async function bootstrap() {
       transform: true,
     }),
   );
-
 
   const config = new DocumentBuilder()
     .setTitle('Booking Platform REST API')
@@ -30,12 +25,10 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
 
-
-  const document =
-    SwaggerModule.createDocument(
-      app,
-      config,
-    );
+  const document = SwaggerModule.createDocument(
+    app,
+    config,
+  );
 
 
   SwaggerModule.setup(
@@ -43,6 +36,7 @@ async function bootstrap() {
     app,
     document,
     {
+      customSiteTitle: 'Booking Platform API Documentation',
       swaggerOptions: {
         persistAuthorization: true,
       },
@@ -51,7 +45,7 @@ async function bootstrap() {
 
 
   await app.listen(
-    process.env.PORT ?? 3000,
+    Number(process.env.PORT) || 3000,
   );
 }
 
