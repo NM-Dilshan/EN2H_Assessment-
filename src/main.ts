@@ -1,34 +1,60 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+
+  const app =
+    await NestFactory.create<NestExpressApplication>(
+      AppModule,
+    );
+
 
   app.enableCors();
+
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
     }),
   );
 
-  const swaggerConfig = new DocumentBuilder()
+
+  const config = new DocumentBuilder()
     .setTitle('Booking Platform REST API')
-    .setDescription('EN2H NestJS technical assignment API.')
+    .setDescription(
+      'EN2H NestJS technical assignment API.',
+    )
     .setVersion('1.0.0')
     .addBearerAuth()
     .build();
 
-  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api', app, swaggerDocument);
 
-  await app.listen(Number(process.env.PORT ?? 3000));
+  const document =
+    SwaggerModule.createDocument(
+      app,
+      config,
+    );
+
+
+  SwaggerModule.setup(
+    'api',
+    app,
+    document,
+    {
+      customSiteTitle:
+        'Booking Platform REST API',
+    },
+  );
+
+
+  await app.listen(
+    Number(process.env.PORT ?? 3000),
+  );
 }
 
 bootstrap();
